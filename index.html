@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --secondary: #8b5cf6;
+  --accent: #ec4899;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --dark: #1f2937;
+  --dark-light: #374151;
+  --light: #f3f4f6;
+  --light-dark: #e5e7eb;
+  --text: #111827;
+  --text-light: #6b7280;
+  --shadow: 0 10px 40px rgba(99, 102, 241, 0.1);
+  --shadow-lg: 0 20px 60px rgba(99, 102, 241, 0.15);
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+/* ===== HEADER SECTION ===== */
+.header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+/* ===== SEARCH BAR ===== */
+.search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 15px 45px 15px 20px;
+  border: 2px solid var(--light-dark);
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: var(--light);
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: white;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.search-icon {
+  position: absolute;
+  right: 15px;
+  font-size: 1.2rem;
+  color: var(--text-light);
+}
+
+/* ===== BUTTONS ===== */
+.btn-primary,
+.btn-secondary,
+.btn-back,
+.btn-close,
+.btn-save-notes {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background: var(--light-dark);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--dark);
+  transform: translateY(-2px);
+}
+
+.btn-back {
+  background: transparent;
+  color: var(--primary);
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  border: 2px solid var(--light-dark);
+}
+
+.btn-back:hover {
+  background: var(--light);
+  border-color: var(--primary);
+}
+
+.btn-close {
+  background: transparent;
+  color: var(--text-light);
+  padding: 8px 12px;
+  font-size: 1.5rem;
+}
+
+.btn-close:hover {
+  background: var(--light);
+  color: var(--danger);
+}
+
+.btn-save-notes {
+  background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+  color: white;
+  width: 100%;
+  margin-top: 15px;
+}
+
+.btn-save-notes:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: var(--shadow-lg);
+}
+
+.subjects-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 25px;
+}
+
+/* ===== SUBJECT CARD ===== */
+.subject-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(248, 249, 250, 1) 100%);
+  border: 2px solid var(--light-dark);
+  border-radius: 16px;
+  padding: 25px;
+  transition: all 0.4s ease;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.subject-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(99, 102, 241, 0.15);
+  border-color: var(--primary);
+}
+
+.subject-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--light-dark);
+}
+
+.subject-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: -0.3px;
+}
+
+.subject-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-icon {
+  background: var(--light);
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon:hover {
+  background: var(--primary);
+  color: white;
+  transform: scale(1.1);
+}
+
+.btn-icon.delete:hover {
+  background: var(--danger);
+}
+
+/* ===== TOPICS SECTION ===== */
+.topics-section {
+  margin-bottom: 20px;
+}
+
+.topics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.topics-header h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.add-topic-btn {
+  background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.add-topic-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.topics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.topic-item {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(236, 72, 153, 0.05) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 10px;
+  padding: 12px 15px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.topic-item:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(236, 72, 153, 0.1) 100%);
+  border-color: var(--secondary);
+  transform: translateX(4px);
+}
+
+.topic-name {
+  font-weight: 600;
+  color: var(--secondary);
+  margin-bottom: 5px;
+  font-size: 0.95rem;
+}
+
+.subtopics {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.subtopic-badge {
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--primary);
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.topic-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.topic-actions .btn-icon {
+  width: 28px;
+  height: 28px;
+  font-size: 0.85rem;
+}
+
+/* ===== TASKS SECTION ===== */
+.tasks-section {
+  margin-bottom: 15px;
+}
+
+.tasks-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.tasks-header h5 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.add-task-btn {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.add-task-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 10px rgba(99, 102, 241, 0.3);
+}
+
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.task-item {
+  background: white;
+  border: 1px solid var(--light-dark);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  transition: all 0.3s ease;
+}
+
+.task-item.completed {
+  background: rgba(16, 185, 129, 0.05);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.task-item:hover {
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+  border-color: var(--primary);
+}
+
+.task-checkbox {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  cursor: pointer;
+  accent-color: var(--success);
+}
+
+.task-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-title {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+  word-break: break-word;
+}
+
+.task-item.completed .task-title {
+  text-decoration: line-through;
+  color: var(--text-light);
+}
+
+.task-meta {
+  display: flex;
+  gap: 15px;
+  font-size: 0.8rem;
+  color: var(--text-light);
+  flex-wrap: wrap;
+}
+
+.task-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.task-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.task-actions .btn-icon {
+  width: 28px;
+  height: 28px;
+  font-size: 0.8rem;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center;
+  padding: 60px 30px;
+  color: var(--text-light);
+  font-size: 1.1rem;
+}
+
+/* ===== TOPIC NOTES VIEW ===== */
+.topic-notes-view {
+  display: none;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1001;
+}
+
+.topic-notes-view.hidden {
+  display: none;
+}
+
+.topic-notes-view:not(.hidden) {
+  display: flex;
+  flex-direction: column;
+}
+
+.notes-header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 25px 30px;
+  margin-bottom: 25px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.notes-header h2 {
+  flex: 1;
+  color: var(--primary);
+  font-size: 1.8rem;
+  letter-spacing: -0.3px;
+}
+
+.notes-container {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.notes-textarea {
+  flex: 1;
+  border: 2px solid var(--light-dark);
+  border-radius: 12px;
+  padding: 20px;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: none;
+  transition: all 0.3s ease;
+  line-height: 1.8;
+}
+
+.notes-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: white;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+/* ===== MODALS ===== */
+.modal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1002;
+  background: white;
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal:not(.hidden) {
+  display: block;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1001;
+}
+
+.modal-overlay:not(.hidden) {
+  display: block;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px;
+  border-bottom: 2px solid var(--light-dark);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+  border-radius: 16px 16px 0 0;
+}
+
+.modal-header h3 {
+  color: var(--primary);
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.modal-body {
+  padding: 30px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid var(--light-dark);
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: white;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px 30px;
+  border-top: 2px solid var(--light-dark);
+  background: var(--light);
+  border-radius: 0 0 16px 16px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+
+  .header h1 {
+    font-size: 1.8rem;
+  }
+
+  .btn-primary {
+    width: 100%;
+  }
+
+  .subjects-container {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .notes-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .notes-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .task-meta {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 12px;
+  }
+
+  .header {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .header h1 {
+    font-size: 1.5rem;
+  }
+
+  .main-content {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .subject-card {
+    padding: 18px;
+    border-radius: 12px;
+  }
+
+  .modal {
+    width: 95%;
+    max-height: 95vh;
+  }
+}
+
+    </style>
+</head>
+<body>
+    <!-- Main Container -->
+    <div id="mainView" class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>📚 Task Manager</h1>
+                <button class="btn-primary" onclick="openAddSubjectModal()">+ New Subject</button>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="Search subjects, topics, or tasks..." 
+                    onkeyup="handleSearch()"
+                >
+                <span class="search-icon">🔍</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div id="subjectsContainer" class="subjects-container">
+                <!-- Subjects will be dynamically added here -->
+            </div>
+            <div id="emptyState" class="empty-state">
+                <p>No subjects yet. Create your first subject to get started!</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Topic Notes View -->
+    <div id="topicNotesView" class="topic-notes-view hidden">
+        <div class="notes-header">
+            <button class="btn-back" onclick="goBackToMain()">← Back</button>
+            <h2 id="topicTitle"></h2>
+            <button class="btn-close" onclick="goBackToMain()">✕</button>
+        </div>
+        <div class="notes-container">
+            <textarea 
+                id="notesTextarea" 
+                class="notes-textarea"
+                placeholder="Write important points about this topic here..."
+            ></textarea>
+            <button class="btn-save-notes" onclick="saveNotes()">Save Notes</button>
+        </div>
+    </div>
+
+    <!-- Modal for Adding/Editing Subject -->
+    <div id="subjectModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="subjectModalTitle">New Subject</h3>
+                <button class="modal-close" onclick="closeSubjectModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Subject Name</label>
+                    <input type="text" id="subjectNameInput" placeholder="Enter subject name">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeSubjectModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveSubject()">Add Subject</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Adding/Editing Topic -->
+    <div id="topicModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="topicModalTitle">New Topic</h3>
+                <button class="modal-close" onclick="closeTopicModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Topic Name</label>
+                    <input type="text" id="topicNameInput" placeholder="Enter topic name">
+                </div>
+                <div class="form-group">
+                    <label>Subtopics (comma-separated)</label>
+                    <input type="text" id="subtopicsInput" placeholder="e.g., Subtopic 1, Subtopic 2">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeTopicModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveTopic()">Add Topic</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Adding/Editing Task -->
+    <div id="taskModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="taskModalTitle">New Task</h3>
+                <button class="modal-close" onclick="closeTaskModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Task Title</label>
+                    <input type="text" id="taskTitleInput" placeholder="Enter task title">
+                </div>
+                <div class="form-group">
+                    <label>Task Description</label>
+                    <textarea id="taskDescriptionInput" placeholder="Enter task description"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="taskDateInput">
+                    </div>
+                    <div class="form-group">
+                        <label>Time</label>
+                        <input type="time" id="taskTimeInput">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeTaskModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveTask()">Add Task</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Overlay -->
+    <div id="modalOverlay" class="modal-overlay hidden" onclick="closeAllModals()"></div>
+
+    <script>
+// Data structure to manage the app state
+let appData = {
+  subjects: [],
+  currentTopicId: null,
+  currentSubjectId: null,
+  currentEditingId: null,
+}
+
+function initApp() {
+  const saved = localStorage.getItem("taskManagerData")
+  if (saved) {
+    appData = JSON.parse(saved)
+  }
+  renderAllSubjects()
+}
+
+function saveData() {
+  localStorage.setItem("taskManagerData", JSON.stringify(appData))
+}
+
+function generateId() {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2)
+}
+
+// ===== SUBJECT MANAGEMENT =====
+function openAddSubjectModal() {
+  appData.currentEditingId = null
+  document.getElementById("subjectModalTitle").textContent = "New Subject"
+  document.getElementById("subjectNameInput").value = ""
+  document.getElementById("subjectModal").classList.remove("hidden")
+  document.getElementById("modalOverlay").classList.remove("hidden")
+  document.getElementById("subjectNameInput").focus()
+}
+
+function closeSubjectModal() {
+  document.getElementById("subjectModal").classList.add("hidden")
+  document.getElementById("modalOverlay").classList.add("hidden")
+}
+
+function saveSubject() {
+  const name = document.getElementById("subjectNameInput").value.trim()
+
+  if (!name) {
+    alert("Please enter a subject name")
+    return
+  }
+
+  if (appData.currentEditingId) {
+    const subject = appData.subjects.find((s) => s.id === appData.currentEditingId)
+    if (subject) {
+      subject.name = name
+    }
+  } else {
+    appData.subjects.push({
+      id: generateId(),
+      name: name,
+      topics: [],
+      tasks: [],
+    })
+  }
+
+  saveData()
+  renderAllSubjects()
+  closeSubjectModal()
+}
+
+function editSubject(subjectId) {
+  const subject = appData.subjects.find((s) => s.id === subjectId)
+  if (subject) {
+    appData.currentEditingId = subjectId
+    document.getElementById("subjectModalTitle").textContent = "Edit Subject"
+    document.getElementById("subjectNameInput").value = subject.name
+    document.getElementById("subjectModal").classList.remove("hidden")
+    document.getElementById("modalOverlay").classList.remove("hidden")
+    document.getElementById("subjectNameInput").focus()
+  }
+}
+
+function deleteSubject(subjectId) {
+  if (confirm("Are you sure you want to delete this subject and all its topics and tasks?")) {
+    appData.subjects = appData.subjects.filter((s) => s.id !== subjectId)
+    saveData()
+    renderAllSubjects()
+  }
+}
+
+// ===== TOPIC MANAGEMENT =====
+function openAddTopicModal(subjectId) {
+  appData.currentSubjectId = subjectId
+  appData.currentEditingId = null
+  document.getElementById("topicModalTitle").textContent = "New Topic"
+  document.getElementById("topicNameInput").value = ""
+  document.getElementById("subtopicsInput").value = ""
+  document.getElementById("topicModal").classList.remove("hidden")
+  document.getElementById("modalOverlay").classList.remove("hidden")
+  document.getElementById("topicNameInput").focus()
+}
+
+function closeTopicModal() {
+  document.getElementById("topicModal").classList.add("hidden")
+  document.getElementById("modalOverlay").classList.add("hidden")
+}
+
+function saveTopic() {
+  const name = document.getElementById("topicNameInput").value.trim()
+  const subtopicsText = document.getElementById("subtopicsInput").value.trim()
+
+  if (!name) {
+    alert("Please enter a topic name")
+    return
+  }
+
+  const subtopics = subtopicsText
+    ? subtopicsText
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s)
+    : []
+  const subject = appData.subjects.find((s) => s.id === appData.currentSubjectId)
+
+  if (subject) {
+    if (appData.currentEditingId) {
+      const topic = subject.topics.find((t) => t.id === appData.currentEditingId)
+      if (topic) {
+        topic.name = name
+        topic.subtopics = subtopics
+      }
+    } else {
+      subject.topics.push({
+        id: generateId(),
+        name: name,
+        subtopics: subtopics,
+        notes: "",
+      })
+    }
+  }
+
+  saveData()
+  renderSubjectCard(appData.currentSubjectId)
+  closeTopicModal()
+}
+
+function editTopic(subjectId, topicId) {
+  const subject = appData.subjects.find((s) => s.id === subjectId)
+  if (subject) {
+    const topic = subject.topics.find((t) => t.id === topicId)
+    if (topic) {
+      appData.currentSubjectId = subjectId
+      appData.currentEditingId = topicId
+      document.getElementById("topicModalTitle").textContent = "Edit Topic"
+      document.getElementById("topicNameInput").value = topic.name
+      document.getElementById("subtopicsInput").value = topic.subtopics.join(", ")
+      document.getElementById("topicModal").classList.remove("hidden")
+      document.getElementById("modalOverlay").classList.remove("hidden")
+      document.getElementById("topicNameInput").focus()
+    }
+  }
+}
+
+function deleteTopic(subjectId, topicId) {
+  if (confirm("Are you sure you want to delete this topic?")) {
+    const subject = appData.subjects.find((s) => s.id === subjectId)
+    if (subject) {
+      subject.topics = subject.topics.filter((t) => t.id !== topicId)
+      saveData()
+      renderSubjectCard(subjectId)
+    }
+  }
+}
+
+function openTopicNotes(subjectId, topicId) {
+  const subject = appData.subjects.find((s) => s.id === subjectId)
+  if (subject) {
+    const topic = subject.topics.find((t) => t.id === topicId)
+    if (topic) {
+      appData.currentTopicId = topicId
+      appData.currentSubjectId = subjectId
+      document.getElementById("topicTitle").textContent = topic.name
+      document.getElementById("notesTextarea").value = topic.notes || ""
+      document.getElementById("mainView").style.display = "none"
+      document.getElementById("topicNotesView").classList.remove("hidden")
+      document.getElementById("notesTextarea").focus()
+    }
+  }
+}
+
+function saveNotes() {
+  const subject = appData.subjects.find((s) => s.id === appData.currentSubjectId)
+  if (subject) {
+    const topic = subject.topics.find((t) => t.id === appData.currentTopicId)
+    if (topic) {
+      topic.notes = document.getElementById("notesTextarea").value
+      saveData()
+      alert("Notes saved successfully!")
+    }
+  }
+}
+
+function goBackToMain() {
+  document.getElementById("mainView").style.display = "block"
+  document.getElementById("topicNotesView").classList.add("hidden")
+  appData.currentTopicId = null
+  appData.currentSubjectId = null
+}
+
+// ===== TASK MANAGEMENT =====
+function openAddTaskModal(subjectId) {
+  appData.currentSubjectId = subjectId
+  appData.currentEditingId = null
+  document.getElementById("taskModalTitle").textContent = "New Task"
+  document.getElementById("taskTitleInput").value = ""
+  document.getElementById("taskDescriptionInput").value = ""
+  document.getElementById("taskDateInput").value = ""
+  document.getElementById("taskTimeInput").value = ""
+  document.getElementById("taskModal").classList.remove("hidden")
+  document.getElementById("modalOverlay").classList.remove("hidden")
+  document.getElementById("taskTitleInput").focus()
+}
+
+function closeTaskModal() {
+  document.getElementById("taskModal").classList.add("hidden")
+  document.getElementById("modalOverlay").classList.add("hidden")
+}
+
+function saveTask() {
+  const title = document.getElementById("taskTitleInput").value.trim()
+  const description = document.getElementById("taskDescriptionInput").value.trim()
+  const date = document.getElementById("taskDateInput").value
+  const time = document.getElementById("taskTimeInput").value
+
+  if (!title) {
+    alert("Please enter a task title")
+    return
+  }
+
+  const subject = appData.subjects.find((s) => s.id === appData.currentSubjectId)
+
+  if (subject) {
+    if (appData.currentEditingId) {
+      const task = subject.tasks.find((t) => t.id === appData.currentEditingId)
+      if (task) {
+        task.title = title
+        task.description = description
+        task.date = date
+        task.time = time
+      }
+    } else {
+      subject.tasks.push({
+        id: generateId(),
+        title: title,
+        description: description,
+        date: date,
+        time: time,
+        completed: false,
+      })
+    }
+  }
+
+  saveData()
+  renderSubjectCard(appData.currentSubjectId)
+  closeTaskModal()
+}
+
+function editTask(subjectId, taskId) {
+  const subject = appData.subjects.find((s) => s.id === subjectId)
+  if (subject) {
+    const task = subject.tasks.find((t) => t.id === taskId)
+    if (task) {
+      appData.currentSubjectId = subjectId
+      appData.currentEditingId = taskId
+      document.getElementById("taskModalTitle").textContent = "Edit Task"
+      document.getElementById("taskTitleInput").value = task.title
+      document.getElementById("taskDescriptionInput").value = task.description || ""
+      document.getElementById("taskDateInput").value = task.date || ""
+      document.getElementById("taskTimeInput").value = task.time || ""
+      document.getElementById("taskModal").classList.remove("hidden")
+      document.getElementById("modalOverlay").classList.remove("hidden")
+      document.getElementById("taskTitleInput").focus()
+    }
+  }
+}
+
+function toggleTaskCompletion(subjectId, taskId) {
+  const subject = appData.subjects.find((s) => s.id === subjectId)
+  if (subject) {
+    const task = subject.tasks.find((t) => t.id === taskId)
+    if (task) {
+      task.completed = !task.completed
+      saveData()
+      renderSubjectCard(subjectId)
+    }
+  }
+}
+
+function deleteTask(subjectId, taskId) {
+  if (confirm("Are you sure you want to delete this task?")) {
+    const subject = appData.subjects.find((s) => s.id === subjectId)
+    if (subject) {
+      subject.tasks = subject.tasks.filter((t) => t.id !== taskId)
+      saveData()
+      renderSubjectCard(subjectId)
+    }
+  }
+}
+
+// ===== RENDERING =====
+function renderAllSubjects() {
+  const container = document.getElementById("subjectsContainer")
+  const emptyState = document.getElementById("emptyState")
+
+  container.innerHTML = ""
+
+  if (appData.subjects.length === 0) {
+    emptyState.style.display = "block"
+  } else {
+    emptyState.style.display = "none"
+    appData.subjects.forEach((subject) => {
+      const card = createSubjectCard(subject)
+      container.appendChild(card)
+    })
+  }
+}
+
+function renderSubjectCard(subjectId) {
+  const subject = appData.subjects.find((s) => s.id === subjectId)
+  if (subject) {
+    const container = document.getElementById("subjectsContainer")
+    const existingCard = container.querySelector(`[data-subject-id="${subjectId}"]`)
+
+    if (existingCard) {
+      existingCard.replaceWith(createSubjectCard(subject))
+    }
+  }
+}
+
+function createSubjectCard(subject) {
+  const card = document.createElement("div")
+  card.className = "subject-card"
+  card.setAttribute("data-subject-id", subject.id)
+
+  let html = `
+        <div class="subject-header">
+            <h3 class="subject-title">${escapeHtml(subject.name)}</h3>
+            <div class="subject-actions">
+                <button class="btn-icon" onclick="editSubject('${subject.id}')" title="Edit">✏️</button>
+                <button class="btn-icon delete" onclick="deleteSubject('${subject.id}')" title="Delete">🗑️</button>
+            </div>
+        </div>
+    `
+
+  // Topics Section
+  if (subject.topics && subject.topics.length > 0) {
+    html += `
+            <div class="topics-section">
+                <div class="topics-header">
+                    <h4>Topics</h4>
+                    <button class="add-topic-btn" onclick="openAddTopicModal('${subject.id}')">+ Add Topic</button>
+                </div>
+                <div class="topics-list">
+        `
+
+    subject.topics.forEach((topic) => {
+      html += `
+                <div class="topic-item" onclick="openTopicNotes('${subject.id}', '${topic.id}')">
+                    <div class="topic-name">${escapeHtml(topic.name)}</div>
+            `
+
+      if (topic.subtopics && topic.subtopics.length > 0) {
+        html += `<div class="subtopics">`
+        topic.subtopics.forEach((subtopic) => {
+          html += `<span class="subtopic-badge">${escapeHtml(subtopic)}</span>`
+        })
+        html += `</div>`
+      }
+
+      html += `
+                    <div class="topic-actions">
+                        <button class="btn-icon" onclick="event.stopPropagation(); editTopic('${subject.id}', '${topic.id}')" title="Edit">✏️</button>
+                        <button class="btn-icon delete" onclick="event.stopPropagation(); deleteTopic('${subject.id}', '${topic.id}')" title="Delete">🗑️</button>
+                    </div>
+                </div>
+            `
+    })
+
+    html += `
+                </div>
+            </div>
+        `
+  } else {
+    html += `
+            <div class="topics-section">
+                <div class="topics-header">
+                    <h4>Topics</h4>
+                    <button class="add-topic-btn" onclick="openAddTopicModal('${subject.id}')">+ Add Topic</button>
+                </div>
+            </div>
+        `
+  }
+
+  // Tasks Section
+  html += `
+        <div class="tasks-section">
+            <div class="tasks-header">
+                <h5>Tasks</h5>
+                <button class="add-task-btn" onclick="openAddTaskModal('${subject.id}')">+ Add Task</button>
+            </div>
+    `
+
+  if (subject.tasks && subject.tasks.length > 0) {
+    html += `<div class="tasks-list">`
+
+    subject.tasks.forEach((task) => {
+      const dateDisplay = task.date ? new Date(task.date).toLocaleDateString() : ""
+      const timeDisplay = task.time || ""
+
+      html += `
+                <div class="task-item ${task.completed ? "completed" : ""}">
+                    <input type="checkbox" class="task-checkbox" ${task.completed ? "checked" : ""} onchange="toggleTaskCompletion('${subject.id}', '${task.id}')">
+                    <div class="task-content">
+                        <div class="task-title">${escapeHtml(task.title)}</div>
+                        ${task.description ? `<p style="font-size: 0.85rem; color: var(--text-light); margin-top: 4px;">${escapeHtml(task.description)}</p>` : ""}
+                        <div class="task-meta">
+                            ${dateDisplay ? `<span>📅 ${dateDisplay}</span>` : ""}
+                            ${timeDisplay ? `<span>🕐 ${timeDisplay}</span>` : ""}
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <button class="btn-icon" onclick="editTask('${subject.id}', '${task.id}')" title="Edit">✏️</button>
+                        <button class="btn-icon delete" onclick="deleteTask('${subject.id}', '${task.id}')" title="Delete">🗑️</button>
+                    </div>
+                </div>
+            `
+    })
+
+    html += `</div>`
+  }
+
+  html += `</div>`
+
+  card.innerHTML = html
+  return card
+}
+
+function escapeHtml(text) {
+  const map = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;",
+  }
+  return text.replace(/[&<>"']/g, (m) => map[m])
+}
+
+// ===== SEARCH FUNCTIONALITY =====
+function handleSearch() {
+  const searchTerm = document.getElementById("searchInput").value.toLowerCase().trim()
+  const container = document.getElementById("subjectsContainer")
+  const cards = container.querySelectorAll(".subject-card")
+
+  if (!searchTerm) {
+    cards.forEach((card) => (card.style.display = "block"))
+    return
+  }
+
+  cards.forEach((card) => {
+    const subjectId = card.getAttribute("data-subject-id")
+    const subject = appData.subjects.find((s) => s.id === subjectId)
+
+    let matches = false
+
+    // Search in subject name
+    if (subject.name.toLowerCase().includes(searchTerm)) {
+      matches = true
+    }
+
+    // Search in topics
+    if (
+      subject.topics &&
+      subject.topics.some(
+        (topic) =>
+          topic.name.toLowerCase().includes(searchTerm) ||
+          (topic.subtopics && topic.subtopics.some((sub) => sub.toLowerCase().includes(searchTerm))),
+      )
+    ) {
+      matches = true
+    }
+
+    // Search in tasks
+    if (
+      subject.tasks &&
+      subject.tasks.some(
+        (task) =>
+          task.title.toLowerCase().includes(searchTerm) ||
+          (task.description && task.description.toLowerCase().includes(searchTerm)),
+      )
+    ) {
+      matches = true
+    }
+
+    card.style.display = matches ? "block" : "none"
+  })
+}
+
+function closeAllModals() {
+  closeSubjectModal()
+  closeTopicModal()
+  closeTaskModal()
+}
+
+// Initialize the app when page loads
+document.addEventListener("DOMContentLoaded", initApp)
+
+    </script>
+</body>
+</html>
